@@ -1,8 +1,9 @@
 import { ReversiUtilities } from '../utilities/reversi-utilities.js';
 
 export const Player = class {
-    constructor(name) {
+    constructor(name, networkManager) {
         this.name = name;
+        this.networkManager = networkManager;
     }
     getName() {
         return this.name;
@@ -20,6 +21,8 @@ export const Player = class {
             var turnDisksExist = diskPositions.length != 0;
             if (!turnDisksExist) { continue; }
 
+            // 通信中の対戦相手に手を通知。
+            this.networkManager.pushNextDisk(clickPosition);
             // ひっくり返ったらその座標を返す。
             return clickPosition;
         }

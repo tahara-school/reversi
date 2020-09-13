@@ -2,40 +2,41 @@ import { PromiseUtilities } from './utilities/promise-utilities.js';
 import { GraphicsUtilities } from './utilities/graphics-utilities.js'
 import { ReversiUtilities } from './utilities/reversi-utilities.js'
 import { Input } from './utilities/input.js'
-import { Vector } from './utilities/vector.js';
 import { BoardView } from './game-objects/board-view.js';
-import { DiskView } from './game-objects/disk-view.js';
 import { Player } from './game-objects/player.js'
+import { Enemy } from './game-objects/enemy.js'
+import { NetworkManager } from './utilities/network-manager.js';
 
 // ゲームクラス
 const Game = class {
-    constructor(canvas, context, input) {
+    constructor(canvas, context, input, networkManager) {
         this.canvas = canvas;
         this.context = context;
         this.input = input;
+        this.networkManager = networkManager;
     }
     async initialize() {
         const boardImagePath = "./images/board.png";
         const boardImage = await GraphicsUtilities.loadImage(boardImagePath);
 
-        // 各オブジェクト初期化
+        // 各オブジェクト初期化。
         this.boardView = new BoardView(this.input, boardImage);
 
-        // 両プレイヤー初期化
-        this.player = new Player('Player');
-        this.opponent = new Player('Opponent');
+        // 両プレイヤー初期化。
+        this.player = new Player('Player', this.networkManager);
+        this.opponent = new Enemy('Opponent', this.networkManager);
         this.isBlackTurn = true;
+        this.isBlack = null;
 
-        this.test();
+        this.playReversiAsync();
     }
-    async test() {
-        //const p = await this.boardView.waitToClickAsync();
-        //console.log(p);
-        //this.boardView.putDisk(p, true);
+    async playReversiAsync() {
+        // マッチングを試み、自分の石を取得。
+        this.isBlack = await this.networkManager.tryToMatchAsync();
 
         while (true) {
             // このターンのキャラクターを取得。
-            const turnPlayer = this.isBlackTurn ? this.player : this.opponent;
+            const turnPlayer = (this.isBlack === this.isBlackTurn) ? this.player : this.opponent;
 
             // 盤の状態取得。
             const boardState = ReversiUtilities.getBoardState(this.boardView, this.isBlackTurn);
@@ -93,13 +94,16 @@ const update = () => {
 let game;
 
 window.onload = async () => {
+    // ネットワーク管理クラス準備
+    const socket = io();
+    const networkManager = new NetworkManager(socket);
     // canvas準備
     const canvas = document.getElementById("main-canvas");
     const context = canvas.getContext("2d");
     // 入力取得クラス準備
     const input = new Input(canvas);
     // ゲームクラス準備
-    game = new Game(canvas, context, input);
+    game = new Game(canvas, context, input, networkManager);
     await game.initialize();
 
     // ループ開始
