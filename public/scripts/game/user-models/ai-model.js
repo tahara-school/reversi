@@ -1,6 +1,6 @@
-import { ReversiUtilities } from '../utilities/reversi-utilities.js';
-import { PromiseUtilities } from '../utilities/promise-utilities.js';
-import { Vector } from '../utilities/vector.js';
+import { ReversiUtilities } from '../../utilities/reversi-utilities.js';
+import { PromiseUtilities } from '../../utilities/promise-utilities.js';
+import { Vector } from '../../utilities/vector.js';
 
 export const AIModel = class {
     constructor(name) {

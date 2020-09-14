@@ -1,4 +1,4 @@
-import { ReversiUtilities } from '../utilities/reversi-utilities.js';
+import { ReversiUtilities } from '../../utilities/reversi-utilities.js';
 
 export const PlayerModel = class {
     constructor(name, networkManager) {
