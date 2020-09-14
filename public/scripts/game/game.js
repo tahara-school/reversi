@@ -46,7 +46,7 @@ export const Game = class {
         this.currentSceneView.draw(this.context);
     }
     createTitleScene() {
-        return new TitleSceneView(this.centerPosition);
+        return new TitleSceneView(this.input, this.centerPosition);
     }
     createMainScene() {
         return new MainSceneView(this.centerPosition, this.boardImage);

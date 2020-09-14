@@ -74,4 +74,13 @@ export const GraphicsUtilities = class {
         const y = position.y;
         context.fillText(text, x, y);
     }
+    static drawTitle(context, color, text, position) {
+        context.fillStyle = color;
+        context.font = "48px serif";
+        context.textBaseline = 'middle';
+        context.textAlign = 'center';
+        const x = position.x;
+        const y = position.y;
+        context.fillText(text, x, y);
+    }
 };
