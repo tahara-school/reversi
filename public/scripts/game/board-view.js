@@ -1,4 +1,5 @@
 import { GraphicsUtilities } from '../utilities/graphics-utilities.js'
+import { PromiseUtilities } from '../utilities/promise-utilities.js';
 import { Vector } from '../utilities/vector.js'
 import { BoardCoordinateModel } from './board-coordinate-model.js'
 import { DiskView } from './disk-view.js';
@@ -66,16 +67,16 @@ export const BoardView = class {
     }
     /**
      * 盤の任意のマスの状態を取得します。
-     * @param {Vector} boardPosition 盤上の座標
+     * @param {Vector} diskPosition 盤上の座標
      */
-    getSquareState(boardPosition) {
+    getSquareState(diskPosition) {
         // 引数が正しいかを確認。
-        const isInRange = this.coordinateModel.getBoardPositionIsInRange(boardPosition);
+        const isInRange = this.coordinateModel.getBoardPositionIsInRange(diskPosition);
         if (!isInRange) {
             throw new Error('盤の範囲外が指定されました。');
         }
 
-        const diskView = this.diskViewTable[boardPosition.y][boardPosition.x];
+        const diskView = this.diskViewTable[diskPosition.y][diskPosition.x];
 
         // まだ石が置かれていない。
         if (diskView === null) {
@@ -93,43 +94,43 @@ export const BoardView = class {
     }
     /**
      * 盤上に石を置きます。
-     * @param {Vector} boardPosition 置く石の盤上の座標
+     * @param {Vector} diskPosition 置く石の盤上の座標
      * @param {boolean} isBlack 置く石が黒か
      */
-    putDisk(boardPosition, isBlack) {
+    putDisk(diskPosition, isBlack) {
         // 引数が正しいかを確認。
-        const isInRange = this.coordinateModel.getBoardPositionIsInRange(boardPosition);
+        const isInRange = this.coordinateModel.getBoardPositionIsInRange(diskPosition);
         if (!isInRange) {
             throw new Error('盤の範囲外が指定されました。');
         }
-        if (this.diskViewTable[boardPosition.y][boardPosition.x] !== null) {
-            throw new Error(`(x: ${boardPosition.x}, y: ${boardPosition.y})には既に石が置かれています。`);
+        if (this.diskViewTable[diskPosition.y][diskPosition.x] !== null) {
+            throw new Error(`(x: ${diskPosition.x}, y: ${diskPosition.y})には既に石が置かれています。`);
         }
 
         // 指定された座標に石を生成。
-        const worldPosition = this.coordinateModel.getWorldPosition(boardPosition);
+        const worldPosition = this.coordinateModel.getWorldPosition(diskPosition);
         const createdDisk = new DiskView(worldPosition);
         // 置かれた石を二次元配列に保持。
-        this.diskViewTable[boardPosition.y][boardPosition.x] = createdDisk;
+        this.diskViewTable[diskPosition.y][diskPosition.x] = createdDisk;
 
         // 指定された表面の色に合わせてひっくり返す。
         createdDisk.turnTo(isBlack);
     }
     /**
      * 盤上の石をひっくり返します。
-     * @param {Vector} boardPosition 盤上の座標
+     * @param {Vector} diskPosition 盤上の座標
      */
-    turnDisk(boardPosition) {
+    turnDisk(diskPosition) {
         // 引数が正しいかを確認。
-        const isInRange = this.coordinateModel.getBoardPositionIsInRange(boardPosition);
+        const isInRange = this.coordinateModel.getBoardPositionIsInRange(diskPosition);
         if (!isInRange) {
             throw new Error('盤の範囲外が指定されました。');
         }
-        if (this.diskViewTable[boardPosition.y][boardPosition.x] === null) {
+        if (this.diskViewTable[diskPosition.y][diskPosition.x] === null) {
             throw new Error('石が置かれていません。');
         }
 
         // 指定された座標の石をひっくり返す。
-        this.diskViewTable[boardPosition.y][boardPosition.x].turn();
+        this.diskViewTable[diskPosition.y][diskPosition.x].turn();
     }
 };

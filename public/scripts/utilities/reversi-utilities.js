@@ -124,4 +124,37 @@ export const ReversiUtilities = class {
         // 空白のマスがあったらパス、無かったらゲーム終了。
         return emptyExists ? 'Pass' : 'Finish';
     }
+    /**
+     * 盤の石全ての数を計測し、黒白それぞれを返します。
+     * @param {*} board 盤情報
+     */
+    static getDiskCount(board) {
+        let blackCount = 0;
+        let whiteCount = 0;
+        // 全マスを走査。
+        for (let x = 0; x < 8; x++) {
+            for (let y = 0; y < 8; y++) {
+                const p = new Vector(x, y);
+
+                // 石が無いマスは無視。
+                const state = board.getSquareState(p);
+                if (state === '-') { continue; }
+
+                // 石があったら数える。
+                if (state === '*') {
+                    blackCount++;
+                }
+                else if (state === 'o') {
+                    whiteCount++;
+                }
+                else {
+                    throw new Error('不正な情報を持っている盤面が渡されました。');
+                }
+            }
+        }
+        return {
+            blackCount: blackCount,
+            whiteCount: whiteCount
+        };
+    }
 };

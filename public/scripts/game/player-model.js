@@ -1,12 +1,15 @@
 import { ReversiUtilities } from '../utilities/reversi-utilities.js';
 
-export const Player = class {
+export const PlayerModel = class {
     constructor(name, networkManager) {
         this.name = name;
         this.networkManager = networkManager;
     }
     getName() {
         return this.name;
+    }
+    getIsPlayer() {
+        return true;
     }
     async getDiskPutPositionAsync(board, isBlack) {
         while (true) {
@@ -22,7 +25,9 @@ export const Player = class {
             if (!turnDisksExist) { continue; }
 
             // 通信中の対戦相手に手を通知。
-            this.networkManager.pushNextDisk(clickPosition);
+            if (this.networkManager !== null) {
+                this.networkManager.pushNextDisk(clickPosition);
+            }
             // ひっくり返ったらその座標を返す。
             return clickPosition;
         }
