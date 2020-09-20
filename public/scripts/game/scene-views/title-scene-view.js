@@ -16,6 +16,10 @@ export const TitleSceneView = class {
         this.startButton = new ButtonView(input, buttonPosition, new Vector(100, 40), 'gray', '遊ぶ', 'white');
         this.waitToClickAndTransitionSceneAsync();
     }
+    initialize() {
+    }
+    finalize() {
+    }
     update() {
     }
     draw(context) {

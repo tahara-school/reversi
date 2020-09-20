@@ -40,6 +40,12 @@ export const MainSceneView = class {
 
         this.playReversiAsync();
     }
+    initialize() {
+        this.soundManager.playBGM('main');
+    }
+    finalize() {
+        this.soundManager.playBGM('main');
+    }
     update() {
     }
     draw(context) {

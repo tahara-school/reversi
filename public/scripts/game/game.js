@@ -1,4 +1,5 @@
 import { GraphicsUtilities } from '../utilities/graphics-utilities.js';
+import { PromiseUtilities } from '../utilities/promise-utilities.js';
 import { Vector } from '../utilities/vector.js';
 import { TitleSceneView } from './scene-views/title-scene-view.js';
 import { MainSceneView } from './scene-views/main-scene-view.js';
@@ -18,6 +19,7 @@ export const Game = class {
         this.boardImage = await GraphicsUtilities.loadImage(boardImagePath);
 
         // 音の読み込み
+        this.soundManager.registerBGM('./sounds/main.mp3', 'main');
         this.soundManager.registerSE('./sounds/decide.wav', 'decide');
         this.soundManager.registerSE('./sounds/put-disk.wav', 'put-disk');
 
@@ -29,6 +31,8 @@ export const Game = class {
 
         // 現在のシーンに初期値としてタイトルシーンを入れる。
         this.currentSceneView = this.createTitleScene();
+        this.currentSceneView.initialize();
+
     }
     update() {
         this.currentSceneView.update();
@@ -36,6 +40,7 @@ export const Game = class {
         const nextSceneName = this.currentSceneView.getNextSceneName();
         if (nextSceneName === null) { return; }
 
+        this.currentSceneView.finalize();
         switch (nextSceneName) {
             case 'Title':
                 this.currentSceneView = this.createTitleScene();
@@ -44,6 +49,7 @@ export const Game = class {
                 this.currentSceneView = this.createMainScene();
                 break;
         }
+        this.currentSceneView.initialize();
     }
     draw() {
         // 画面を初期化。
