@@ -1,5 +1,4 @@
 import { GraphicsUtilities } from '../utilities/graphics-utilities.js'
-import { PromiseUtilities } from '../utilities/promise-utilities.js';
 import { Vector } from '../utilities/vector.js'
 import { BoardCoordinateModel } from './board-coordinate-model.js'
 import { DiskView } from './disk-view.js';
@@ -10,8 +9,9 @@ import { DiskView } from './disk-view.js';
  * @param {*} image 
  */
 export const BoardView = class {
-    constructor(input, image) {
+    constructor(input, soundManager, image) {
         this.input = input;
+        this.soundManager = soundManager;
         this.image = image;
         this.position = new Vector(300, 250);
         this.boardWidth = 300;
@@ -115,6 +115,9 @@ export const BoardView = class {
 
         // 指定された表面の色に合わせてひっくり返す。
         createdDisk.turnTo(isBlack);
+
+        // 音再生。
+        this.soundManager.playSE('put-disk');
     }
     /**
      * 盤上の石をひっくり返します。
@@ -132,5 +135,8 @@ export const BoardView = class {
 
         // 指定された座標の石をひっくり返す。
         this.diskViewTable[diskPosition.y][diskPosition.x].turn();
+
+        // 音再生。
+        this.soundManager.playSE('put-disk');
     }
 };

@@ -1,11 +1,11 @@
 export const SoundManager = class {
     constructor() {
-        this.sounds = {};
+        this.soundSources = {};
     }
     registerSE(source, soundName) {
-        this.sounds[soundName] = new Audio(source);
+        this.soundSources[soundName] = source;
     }
     playSE(soundName) {
-        this.sounds[soundName].play();
+        new Audio(this.soundSources[soundName]).play();
     }
 };

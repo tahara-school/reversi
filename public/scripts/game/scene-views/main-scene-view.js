@@ -12,17 +12,18 @@ import { OpponentModel } from '../user-models/opponent-model.js';
 import { AIModel } from '../user-models/ai-model.js';
 
 export const MainSceneView = class {
-    constructor(input, networkManager, centerPosition, boardImage) {
+    constructor(input, soundManager, networkManager, centerPosition, boardImage) {
         this.nextSceneName = null;
         this.titleSceneName = 'Title';
         this.input = input;
+        this.soundManager = soundManager;
         this.networkManager = networkManager;
 
         this.isOnline = false;
 
         // 各オブジェクト初期化。
         // 盤面
-        this.boardView = new BoardView(this.input, boardImage);
+        this.boardView = new BoardView(this.input, this.soundManager, boardImage);
         // プレイヤーの情報(石・石数・ターンプレイヤー)
         const p1 = new Vector(-100, -180);
         p1.plus(centerPosition);

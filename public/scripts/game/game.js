@@ -19,6 +19,7 @@ export const Game = class {
 
         // 音の読み込み
         this.soundManager.registerSE('./sounds/decide.wav', 'decide');
+        this.soundManager.registerSE('./sounds/put-disk.wav', 'put-disk');
 
         // canvasの中心座標を取得。
         const rect = this.canvas.getBoundingClientRect();
@@ -54,6 +55,6 @@ export const Game = class {
         return new TitleSceneView(this.input, this.soundManager, this.centerPosition);
     }
     createMainScene() {
-        return new MainSceneView(this.input, this.networkManager, this.centerPosition, this.boardImage);
+        return new MainSceneView(this.input, this.soundManager, this.networkManager, this.centerPosition, this.boardImage);
     }
 };
