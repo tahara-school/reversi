@@ -2,11 +2,11 @@ import { PromiseUtilities } from './promise-utilities.js'
 import { Vector } from './vector.js'
 
 export const NetworkManager = class {
-    constructor(socket) {
-        this.socket = socket;
+    constructor() {
+        this.socket = io();
         this.isConnected = false;
+        
         this.isMatched = false;
-        this.selfID = null;
         this.otherID = null;
         this.isBlack = null;
 
@@ -19,7 +19,6 @@ export const NetworkManager = class {
         });
         this.socket.on('finish matching', msg => {
             this.isMatched = true;
-            this.selfID = msg.selfID;
             this.otherID = msg.otherID;
             this.isBlack = msg.isBlack;
         });
@@ -27,24 +26,65 @@ export const NetworkManager = class {
             this.isPut = true;
             this.diskPosition = msg.diskPosition;
         });
+        this.socket.on('go missing', msg => {
+            this.isMatched = false;
+            this.otherID = null;
+            this.isBlack = null;
+        });
     }
+    /**
+     * 対戦相手を探します。
+     */
     async tryToMatchAsync() {
+        if (this.isMatched) {
+            throw new Error('既に対戦相手が見つかっています。');
+        }
         await PromiseUtilities.waitUntil(() => this.isConnected, 0.1);
         this.socket.emit('try to match');
         await PromiseUtilities.waitUntil(() => this.isMatched, 0.1);
-        return this.isBlack;
+        return {
+            status: true,
+            result: {
+                isBlack: this.isBlack,
+            },
+        };
     }
+    endToPlay() {
+        this.socket.emit('end to play');
+        this.isMatched = false;
+        this.otherID = null;
+        this.isBlack = null;
+    }
+    /**
+     * 相手の次の手を取得します。
+     */
     async popNextDisk() {
+        // 切断されているので失敗。
+        if (!this.isMatched) {
+            return { status: false, result: null };
+        }
         // 相手が石を置くまで待機。
-        await PromiseUtilities.waitUntil(() => this.isPut, 0.1);
+        await PromiseUtilities.waitUntil(() => this.isPut || !this.isMatched, 0.1);
+        // 切断されたので失敗。
+        if (!this.isMatched) {
+            return { status: false, result: null };
+        }
         // 相手の手を保存。
         const result = this.diskPosition;
         // 同じ手を2回使わないように情報破棄。
         this.isPut = false;
         this.diskPosition = null;
-        return new Vector(result.x, result.y);
+        return {
+            status: true,
+            result: {
+                diskPosition: new Vector(result.x, result.y),
+            },
+        };
     }
     async pushNextDisk(boardPosition) {
+        if (!this.isMatched) {
+            throw new Error('通信が切断されました。');
+        }
         this.socket.emit('put disk', {
             otherID: this.otherID,
             diskPosition: {

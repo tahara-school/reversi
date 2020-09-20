@@ -28,7 +28,14 @@ export const AIModel = class {
                 // 石を置くことで石をひっくり返せるマスだったら、そのマスの座標を返す。
                 const turnDisks = ReversiUtilities.getTurnDisks(board, p, isBlack);
                 const turnDisksExist = turnDisks.length !== 0;
-                if (turnDisksExist) { return p; }
+                if (!turnDisksExist) { continue; }
+
+                return {
+                    status: true,
+                    result: {
+                        diskPosition: p,
+                    },
+                };
             }
         }
         throw new Error('盤に配置できる場所がありません。');

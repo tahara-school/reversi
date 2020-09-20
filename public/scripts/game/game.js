@@ -49,6 +49,6 @@ export const Game = class {
         return new TitleSceneView(this.input, this.centerPosition);
     }
     createMainScene() {
-        return new MainSceneView(this.centerPosition, this.boardImage);
+        return new MainSceneView(this.input, this.networkManager, this.centerPosition, this.boardImage);
     }
 };

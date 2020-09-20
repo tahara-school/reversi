@@ -14,8 +14,7 @@ let game;
 
 window.onload = async () => {
     // ネットワーク管理クラス準備
-    const socket = io();
-    const networkManager = new NetworkManager(socket);
+    const networkManager = new NetworkManager();
     // canvas準備
     const canvas = document.getElementById("main-canvas");
     const context = canvas.getContext("2d");

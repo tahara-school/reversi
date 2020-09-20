@@ -11,18 +11,28 @@ app.use(express.static(DOCUMENT_ROOT));
 
 // マッチング待機中のユーザー配列
 const usersWaitingToMatch = [];
+// 対戦中のユーザーペア配列
+let userPairsPlaying = [];
 
 /**
  * [イベント] ユーザーが接続
  */
 io.on("connection", socket => {
-    console.log("ユーザーが接続しました");
-    //---------------------------------
-    // 発言を全員に送信
-    //---------------------------------
-    socket.on("post", msg => {
-        io.emit("member-post", msg);
+    console.log("ユーザーが接続しました。");
+
+    // 切断
+    socket.on("disconnect", msg => {
+        console.log('ユーザーが切断しました。');
+
+        const p = userPairsPlaying.find(p => p[0] == socket.id || p[1] == socket.id);
+        if (p === undefined) { return; }
+
+        // 相手に接続通知。
+        const other = (p[0] == socket.id) ? p[1] : p[0];
+        io.to(other).emit('go missing');
     });
+
+    // 対戦相手の要求
     socket.on('try to match', msg => {
         usersWaitingToMatch.push(socket.id);
         console.log('ユーザーが接続待機を開始しました。');
@@ -46,8 +56,18 @@ io.on("connection", socket => {
             isBlack: false
         })
 
+        // プレイ中のユーザーとして保持。
+        userPairsPlaying.push([user1, user2]);
+
         console.log('マッチングしました。');
     });
+
+    // 対戦終了
+    socket.on('end to play', msg => {
+        userPairsPlaying = userPairsPlaying.filter(p => p[0] != socket.id && p[1] != socket.id);
+    });
+
+    // 石の配置
     socket.on('put disk', msg => {
         console.log('石が置かれました。');
         console.log(msg.otherID);

@@ -29,7 +29,12 @@ export const PlayerModel = class {
                 this.networkManager.pushNextDisk(clickPosition);
             }
             // ひっくり返ったらその座標を返す。
-            return clickPosition;
+            return {
+                status: true,
+                result: {
+                    diskPosition: clickPosition,
+                },
+            };
         }
     }
 };

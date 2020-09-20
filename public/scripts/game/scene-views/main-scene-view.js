@@ -12,11 +12,13 @@ import { OpponentModel } from '../user-models/opponent-model.js';
 import { AIModel } from '../user-models/ai-model.js';
 
 export const MainSceneView = class {
-    constructor(centerPosition, boardImage) {
+    constructor(input, networkManager, centerPosition, boardImage) {
         this.nextSceneName = null;
         this.titleSceneName = 'Title';
+        this.input = input;
+        this.networkManager = networkManager;
 
-        this.isOnline = false;
+        this.isOnline = true;
 
         // 各オブジェクト初期化。
         // 盤面
@@ -62,8 +64,19 @@ export const MainSceneView = class {
         if (this.isOnline) {
             // マッチングを試み、自分の石を取得。
             this.textView.beginToDisplay('遊ぶ人を探しています...');
-            const isBlack = await this.networkManager.tryToMatchAsync();
+            const temp = await this.networkManager.tryToMatchAsync();
             this.textView.endToDisplay();
+
+            if (!temp.status) {
+                this.textView.beginToDisplay('遊ぶ人が見つかりませんでした。');
+                await PromiseUtilities.delay(2);
+                this.textView.endToDisplay();
+                // タイトルへ遷移。
+                this.nextSceneName = this.titleSceneName;
+                return;
+            }
+            
+            const isBlack = temp.result.isBlack;
 
             const playerModel = new PlayerModel('自分', this.networkManager);
             const opponentModel = new OpponentModel('相手', this.networkManager);
@@ -104,13 +117,25 @@ export const MainSceneView = class {
 
                     // プレイヤー以外の手を待つ場合、
                     if (!turnPlayer.getIsPlayer()) {
-                        // 思考中UIを出す。
+                        // 思考中UIを表示。
                         this.thinkingView.beginToDisplay();
                     }
-                    var putDiskPosition = await turnPlayer.getDiskPutPositionAsync(this.boardView, this.isBlackTurn);
+
+                    const temp = await turnPlayer.getDiskPutPositionAsync(this.boardView, this.isBlackTurn);
+                    // 思考が終わったのでUIを非表示。
                     this.thinkingView.endToDisplay();
 
+                    if (!temp.status) {
+                        this.textView.beginToDisplay('切断されました。');
+                        await PromiseUtilities.delay(2);
+                        this.textView.endToDisplay();
+                        // タイトルへ遷移。
+                        this.nextSceneName = this.titleSceneName;
+                        return;
+                    }
+
                     // 石配置。
+                    const putDiskPosition = temp.result.diskPosition;
                     this.boardView.putDisk(putDiskPosition, this.isBlackTurn);
 
                     // 石をひっくり返す。
@@ -131,7 +156,6 @@ export const MainSceneView = class {
 
                 // 盤が埋まってたら終了。
                 case 'Finish':
-                    console.log("ゲーム終了");
                     const result = ReversiUtilities.getDiskCount(this.boardView);
                     const isDraw = result.blackCount === result.whiteCount;
                     const blackWins = result.blackCount > result.whiteCount;
