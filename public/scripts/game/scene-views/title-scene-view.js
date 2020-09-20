@@ -3,7 +3,8 @@ import { Vector } from '../../utilities/vector.js';
 import { ButtonView } from '../button-view.js';
 
 export const TitleSceneView = class {
-    constructor(input, centerPosition) {
+    constructor(input, soundManager, centerPosition) {
+        this.soundManager = soundManager;
         this.nextSceneName = null;
         this.mainSceneName = 'Main';
 
@@ -27,5 +28,6 @@ export const TitleSceneView = class {
     async waitToClickAndTransitionSceneAsync() {
         await this.startButton.waitToClickAsync();
         this.nextSceneName = this.mainSceneName;
+        this.soundManager.playSE('decide');
     }
 };

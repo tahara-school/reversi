@@ -5,15 +5,20 @@ import { MainSceneView } from './scene-views/main-scene-view.js';
 
 // ゲームクラス
 export const Game = class {
-    constructor(canvas, context, input, networkManager) {
+    constructor(canvas, context, input, networkManager, soundManager) {
         this.canvas = canvas;
         this.context = context;
         this.input = input;
         this.networkManager = networkManager;
+        this.soundManager = soundManager;
     }
     async initialize() {
+        // 画像の読み込み
         const boardImagePath = "./images/board.png";
         this.boardImage = await GraphicsUtilities.loadImage(boardImagePath);
+
+        // 音の読み込み
+        this.soundManager.registerSE('./sounds/decide.wav', 'decide');
 
         // canvasの中心座標を取得。
         const rect = this.canvas.getBoundingClientRect();
@@ -46,7 +51,7 @@ export const Game = class {
         this.currentSceneView.draw(this.context);
     }
     createTitleScene() {
-        return new TitleSceneView(this.input, this.centerPosition);
+        return new TitleSceneView(this.input, this.soundManager, this.centerPosition);
     }
     createMainScene() {
         return new MainSceneView(this.input, this.networkManager, this.centerPosition, this.boardImage);
