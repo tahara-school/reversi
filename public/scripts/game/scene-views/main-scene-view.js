@@ -18,7 +18,7 @@ export const MainSceneView = class {
         this.input = input;
         this.networkManager = networkManager;
 
-        this.isOnline = true;
+        this.isOnline = false;
 
         // 各オブジェクト初期化。
         // 盤面
@@ -75,7 +75,7 @@ export const MainSceneView = class {
                 this.nextSceneName = this.titleSceneName;
                 return;
             }
-            
+
             const isBlack = temp.result.isBlack;
 
             const playerModel = new PlayerModel('自分', this.networkManager);
@@ -149,9 +149,10 @@ export const MainSceneView = class {
 
                 // 石を置け無かったらパス。
                 case 'Pass':
-                    console.log(`${turnPlayer.Name}の番はパス`);
+                    this.textView.beginToDisplay('パス！');
+                    await PromiseUtilities.delay(0.5);
+                    this.textView.endToDisplay();
                     this.isBlackTurn = !this.isBlackTurn;
-                    await PromiseUtilities.delay(0.1);
                     break;
 
                 // 盤が埋まってたら終了。
