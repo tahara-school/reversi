@@ -16,6 +16,8 @@ export const Game = class {
         // 画像の読み込み
         const boardImagePath = "./images/board.png";
         this.boardImage = await GraphicsUtilities.loadImage(boardImagePath);
+        const buttonImagePath = "./images/button.png";
+        this.buttonImage = await GraphicsUtilities.loadImage(buttonImagePath);
 
         // 音の読み込み
         this.soundManager.registerBGM('./sounds/main.mp3', 'main');
@@ -60,7 +62,7 @@ export const Game = class {
         this.currentSceneView.draw(this.context);
     }
     createTitleScene() {
-        return new TitleSceneView(this.input, this.soundManager, this.centerPosition);
+        return new TitleSceneView(this.input, this.soundManager, this.centerPosition, this.buttonImage);
     }
     createMainScene() {
         return new MainSceneView(this.input, this.soundManager, this.networkManager, this.centerPosition, this.boardImage);

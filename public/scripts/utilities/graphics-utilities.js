@@ -76,7 +76,7 @@ export const GraphicsUtilities = class {
     }
     static drawTitle(context, color, text, position) {
         context.fillStyle = color;
-        context.font = "48px serif";
+        context.font = "60px serif";
         context.textBaseline = 'middle';
         context.textAlign = 'center';
         const x = position.x;

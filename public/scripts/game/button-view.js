@@ -1,4 +1,5 @@
 import { TextWithFrameView } from './text-with-frame-view.js';
+import { GraphicsUtilities } from '../utilities/graphics-utilities.js'
 
 /**
  * ボタンクラス
@@ -7,18 +8,21 @@ import { TextWithFrameView } from './text-with-frame-view.js';
  * @param {*} scale ボタンの拡縮
  */
 export const ButtonView = class {
-    constructor(input, position, scale, frameColor, text, textColor) {
+    constructor(input, position, scale, text, textColor, buttonImage) {
         this.input = input;
         this.position = position.clone();
         this.scale = scale.clone();
-        this.textWithFrameView = new TextWithFrameView(position, textColor, text, frameColor, scale);
+        this.text = text;
+        this.textColor = textColor;
+        this.buttonImage = buttonImage;
     }
     /**
      * ボタンを描画します。
      * @param {*} context
      */
     draw(context) {
-        this.textWithFrameView.draw(context);
+        GraphicsUtilities.drawImage(context, this.buttonImage, this.position, this.scale);
+        GraphicsUtilities.drawText(context, this.textColor, this.text, this.position);
     }
     /**
      * ボタンがクリックされるまで待機します。

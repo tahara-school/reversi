@@ -3,17 +3,17 @@ import { Vector } from '../../utilities/vector.js';
 import { ButtonView } from '../button-view.js';
 
 export const TitleSceneView = class {
-    constructor(input, soundManager, centerPosition) {
+    constructor(input, soundManager, centerPosition, buttonImage) {
         this.soundManager = soundManager;
         this.nextSceneName = null;
         this.mainSceneName = 'Main';
 
         this.titlePosition = centerPosition.clone();
-        this.titlePosition.plus(new Vector(0, -40));
+        this.titlePosition.plus(new Vector(0, -70));
         const buttonPosition = centerPosition.clone();
         buttonPosition.plus(new Vector(0, 50));
 
-        this.startButton = new ButtonView(input, buttonPosition, new Vector(100, 40), 'gray', '遊ぶ', 'white');
+        this.startButton = new ButtonView(input, buttonPosition, new Vector(100, 40), '遊ぶ', 'black', buttonImage);
         this.waitToClickAndTransitionSceneAsync();
     }
     initialize() {
@@ -23,7 +23,7 @@ export const TitleSceneView = class {
     update() {
     }
     draw(context) {
-        GraphicsUtilities.drawTitle(context, 'silver', 'リバーシ', this.titlePosition)
+        GraphicsUtilities.drawTitle(context, 'silver', 'リバーシ', this.titlePosition);
         this.startButton.draw(context);
     }
     getNextSceneName() {
