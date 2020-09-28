@@ -19,7 +19,7 @@ export const MainSceneView = class {
         this.soundManager = soundManager;
         this.networkManager = networkManager;
 
-        this.isOnline = false;
+        this.isOnline = true;
 
         // 各オブジェクト初期化。
         // 盤面
@@ -44,7 +44,7 @@ export const MainSceneView = class {
         this.soundManager.playBGM('main');
     }
     finalize() {
-        this.soundManager.playBGM('main');
+        this.soundManager.stopBGM('main');
     }
     update() {
     }
@@ -97,7 +97,8 @@ export const MainSceneView = class {
             }
 
             this.textView.beginToDisplay('遊ぶ人が決まりました！');
-            await PromiseUtilities.delay(1);
+            this.soundManager.playSE('match');
+            await PromiseUtilities.delay(2);
             this.textView.endToDisplay();
         }
         else {
@@ -157,6 +158,7 @@ export const MainSceneView = class {
                 // 石を置け無かったらパス。
                 case 'Pass':
                     this.textView.beginToDisplay('パス！');
+                    this.soundManager.playSE('pass');
                     await PromiseUtilities.delay(0.5);
                     this.textView.endToDisplay();
                     this.isBlackTurn = !this.isBlackTurn;
@@ -177,7 +179,8 @@ export const MainSceneView = class {
                         this.textView.beginToDisplay('白番の勝利！');
                     }
 
-                    await PromiseUtilities.delay(2);
+                    this.soundManager.playSE('result');
+                    await PromiseUtilities.delay(2.5);
                     this.textView.endToDisplay();
                     // タイトルへ遷移。
                     this.nextSceneName = this.titleSceneName;

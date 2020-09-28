@@ -1,5 +1,4 @@
 import { GraphicsUtilities } from '../utilities/graphics-utilities.js';
-import { PromiseUtilities } from '../utilities/promise-utilities.js';
 import { Vector } from '../utilities/vector.js';
 import { TitleSceneView } from './scene-views/title-scene-view.js';
 import { MainSceneView } from './scene-views/main-scene-view.js';
@@ -22,6 +21,9 @@ export const Game = class {
         this.soundManager.registerBGM('./sounds/main.mp3', 'main');
         this.soundManager.registerSE('./sounds/decide.wav', 'decide');
         this.soundManager.registerSE('./sounds/put-disk.wav', 'put-disk');
+        this.soundManager.registerSE('./sounds/result.wav', 'result');
+        this.soundManager.registerSE('./sounds/match.wav', 'match');
+        this.soundManager.registerSE('./sounds/pass.wav', 'pass');
 
         // canvasの中心座標を取得。
         const rect = this.canvas.getBoundingClientRect();
