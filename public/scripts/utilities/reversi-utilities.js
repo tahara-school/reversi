@@ -125,6 +125,33 @@ export const ReversiUtilities = class {
         return emptyExists ? 'Pass' : 'Finish';
     }
     /**
+     * 現在石を置ける全座標を取得します。
+     * @param {*} board 盤情報
+     * @param {*} isBlack 置く石は黒か
+     */
+    static getSelectableDiskPositions(board, isBlack) {
+        const result = [];
+        // 全マスを走査。
+        for (let x = 0; x < 8; x++) {
+            for (let y = 0; y < 8; y++) {
+                const p = new Vector(x, y);
+
+                // 石が既にあるマスは無視。
+                const state = board.getSquareState(p);
+                if (state !== '-') { continue; }
+
+                // 石を置くことで石をひっくり返せるマスだったら、そのマスの座標を保存。
+                const turnDisks = ReversiUtilities.getTurnDisks(board, p, isBlack);
+                const turnDisksExist = turnDisks.length !== 0;
+                if (turnDisksExist) {
+                    result.push(p);
+                }
+            }
+        }
+
+        return result;
+    }
+    /**
      * 盤の石全ての数を計測し、黒白それぞれを返します。
      * @param {*} board 盤情報
      */

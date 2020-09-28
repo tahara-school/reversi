@@ -129,9 +129,16 @@ export const MainSceneView = class {
                         this.thinkingView.beginToDisplay();
                     }
 
+                    // 置ける場所ヒント表示。
+                    const selectablePositions = ReversiUtilities.getSelectableDiskPositions(this.boardView, this.isBlackTurn);
+                    this.boardView.enableSelectableHints(selectablePositions, this.isBlackTurn);
+
+                    // 思考中。
                     const temp = await turnPlayer.getDiskPutPositionAsync(this.boardView, this.isBlackTurn);
                     // 思考が終わったのでUIを非表示。
                     this.thinkingView.endToDisplay();
+                    // ヒント非表示。
+                    this.boardView.disableSelectableHints();
 
                     if (!temp.status) {
                         this.textView.beginToDisplay('切断されました。');

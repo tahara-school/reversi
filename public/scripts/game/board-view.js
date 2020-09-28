@@ -2,6 +2,7 @@ import { GraphicsUtilities } from '../utilities/graphics-utilities.js'
 import { Vector } from '../utilities/vector.js'
 import { BoardCoordinateModel } from './board-coordinate-model.js'
 import { DiskView } from './disk-view.js';
+import { SelectableView } from './selectable-view.js';
 
 /**
  * オセロの盤面クラス
@@ -27,6 +28,13 @@ export const BoardView = class {
             this.diskViewTable.push(row);
         }
 
+        // 選択可能情報。まず空で埋める。
+        this.selectableViewTable = [];
+        for (let i = 0; i < 8; i++) {
+            const row = [null, null, null, null, null, null, null, null];
+            this.selectableViewTable.push(row);
+        }
+
         // オセロの初期配置。
         this.putDisk(new Vector(3, 3), false);
         this.putDisk(new Vector(3, 4), true);
@@ -44,6 +52,13 @@ export const BoardView = class {
             for (const diskView of diskViewRow) {
                 if (diskView === null) { continue; }
                 diskView.draw(context);
+            }
+        }
+        // 選択可能場所を描画。
+        for (const selectableViewRow of this.selectableViewTable) {
+            for (const selectableView of selectableViewRow) {
+                if (selectableView === null) { continue; }
+                selectableView.draw(context);
             }
         }
     }
@@ -138,5 +153,33 @@ export const BoardView = class {
 
         // 音再生。
         this.soundManager.playSE('put-disk');
+    }
+    enableSelectableHint(selectablePosition, isBlack) {
+        // 引数が正しいかを確認。
+        const isInRange = this.coordinateModel.getBoardPositionIsInRange(selectablePosition);
+        if (!isInRange) {
+            throw new Error('盤の範囲外が指定されました。');
+        }
+        if (this.selectableViewTable[selectablePosition.y][selectablePosition.x] !== null) {
+            throw new Error(`(x: ${selectablePosition.x}, y: ${selectablePosition.y})には既に選択可能表示が置かれています。`);
+        }
+
+        // 指定された座標に石を生成。
+        const worldPosition = this.coordinateModel.getWorldPosition(selectablePosition);
+        const createdSelectable = new SelectableView(worldPosition, isBlack);
+        // 置かれた石を二次元配列に保持。
+        this.selectableViewTable[selectablePosition.y][selectablePosition.x] = createdSelectable;
+    }
+    enableSelectableHints(selectablePositions, isBlack) {
+        for (const selectablePosition of selectablePositions) {
+            this.enableSelectableHint(selectablePosition, isBlack);
+        }
+    }
+    disableSelectableHints() {
+        for (let x = 0; x < 8; x++) {
+            for (let y = 0; y < 8; y++) {
+                this.selectableViewTable[y][x] = null;
+            }
+        }
     }
 };
